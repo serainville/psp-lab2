@@ -1,0 +1,25 @@
+# Bind the ClusterRole to the desired set of service accounts.
+# Policies should typically be bound to service accounts in a namespace.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: restricted
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: psp-restricted
+subjects:
+# Example: All service accounts in kube-system
+#- apiGroup: rbac.authorization.k8s.io
+#  kind: Group
+#  name: system:serviceaccounts
+#  namespace: kube-system
+# All service accounts in all namespaces
+- kind: Group
+  name: system:serviceaccounts
+  apiGroup: rbac.authorization.k8s.io
+
+# Example: A specific service account in my-namespace
+#- kind: ServiceAccount # Omit apiGroup
+#  name: default
+#  namespace: my-namespace

@@ -1,0 +1,50 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: api-test
+  name: api-test
+  namespace: sl-admin
+  annotations:
+    container.security.alpha.kubernetes.io/pod: "runtime/default" ### All Pod containers
+    # container.security.alpha.kubernetes.io/api-proxy: "runtime/default" ### Container specific
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api-test
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: api-test
+    spec:
+    #  securityContext:
+    #    runAsUser: 1000
+    #    runAsGroup: 65534
+    #    fsGroup: 65534
+      serviceAccount: api-proxy
+      # Kubernetes 1.19+ supports the following, instead of annotations
+      #securityContext:
+      #  seccompProfile:
+      #    type: RuntimeDefault
+      containers:
+      - image: gcr.io/serverlab/api-test:0.0.2
+        name: api-test
+        ports:
+        - name: api-test
+          containerPort: 10000
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 128m
+            memory: 8Mi
+          limits:
+            cpu: 128m
+            memory: 8Mi
+

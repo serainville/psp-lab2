@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: api-proxy
+  name: api-proxy
+  namespace: sl-admin
+  annotations:
+    container.security.alpha.kubernetes.io/pod: "runtime/default" ### All Pod containers
+    # container.security.alpha.kubernetes.io/api-proxy: "runtime/default" ### Container specific
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-proxy
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: api-proxy
+    spec:
+      securityContext:
+        runAsUser: 10000
+        runAsGroup: 10000
+        fsGroup: 10000
+      serviceAccount: api-proxy
+      # Kubernetes 1.19+ supports the following, instead of annotations
+      #securityContext:
+      #  seccompProfile:
+      #    type: RuntimeDefault
+      containers:
+      - image: gcr.io/serverlab/api-proxy:0.1.24
+        name: api-proxy
+        ports:
+        - name: api-proxy
+          containerPort: 8118
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 128m
+            memory: 256Mi
+          limits:
+            cpu: 1024m
+            memory: 1024Mi

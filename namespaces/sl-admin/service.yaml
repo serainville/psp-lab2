@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: api-proxy
+  name: api-proxy-svc
+  namespace: sl-admin
+spec:
+  ports:
+  - port: 8118
+    protocol: TCP
+    targetPort: 8118
+  selector:
+    app: api-proxy
+  type: LoadBalancer

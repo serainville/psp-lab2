@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: serverlab-web
+  namespace: serverlab
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: serverlab-web-dev
+  namespace: serverlab
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: serverlab-web-prod
+  namespace: serverlab
+  annotations:
+    iam.gke.io/gcp-service-account: serverlab-kubernetes@serverlab.iam.gserviceaccount.com
+

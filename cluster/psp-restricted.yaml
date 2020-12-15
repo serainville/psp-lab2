@@ -1,0 +1,31 @@
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: psp-restricted
+spec:
+  hostPID: false
+  hostNetwork: false
+  hostIPC: false
+  
+  privileged: false  # Prevents creation of privileged Pods
+  allowPrivilegeEscalation: false
+  allowedCapabilities: []
+  requiredDropCapabilities:
+    - ALL
+  runAsUser:
+    #rule: MustRunAsNonRoot
+    rule: MustRunAs
+    ranges:
+    - min: 30000
+      max: 65534
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: MustRunAs
+    ranges:
+    - min: 1
+      max: 65534
+  fsGroup:
+    rule: RunAsAny
+  volumes:
+  - '*'

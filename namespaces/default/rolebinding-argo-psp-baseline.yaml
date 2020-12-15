@@ -1,0 +1,17 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: default-psp-baseline
+  namespace: sl-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: baseline
+subjects:
+# Example: All service accounts in my-namespace
+- apiGroup: rbac.authorization.k8s.io
+  kind: Group
+  name: system:serviceaccounts
+# Example: A specific service account in my-namespace
+#- kind: ServiceAccount
+#  name: api-proxy

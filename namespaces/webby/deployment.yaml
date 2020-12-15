@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: webby
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: webby-app
+  namespace: webby
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webby
+  name: webby
+  namespace: webby
+  annotations:
+    container.security.alpha.kubernetes.io/pod: "runtime/default" ### All Pod containers
+    # container.security.alpha.kubernetes.io/api-proxy: "runtime/default" ### Container specific
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webby
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: webby
+    spec:
+      securityContext:
+        runAsUser: 30000
+        runAsGroup: 30000
+        fsGroup: 30000
+      #serviceAccount: webby-app
+      # Kubernetes 1.19+ supports the following, instead of annotations
+      #securityContext:
+      #  seccompProfile:
+      #    type: RuntimeDefault
+      containers:
+      - image: gcr.io/serverlab/webby:0.1.3
+        name: webby
+        env:
+          - name: PORT
+            value: "8080"
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        volumeMounts:
+        - name: foo
+          mountPath: "/etc/foo"
+      volumes:
+      - name: foo
+        secret:
+          secretName: my-secrets
